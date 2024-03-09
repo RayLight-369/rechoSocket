@@ -6,6 +6,10 @@ const SocketIO = require( "socket.io" );
 const io = new SocketIO.Server( server );
 const PORT = 5261;
 
+app.get( "/", ( _, res ) => {
+  res.send( "Hello, world!" );
+} );
+
 io.on( "connection", ( socket ) => {
   console.log( socket.id, " connected!" );
 } );

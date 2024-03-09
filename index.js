@@ -20,12 +20,22 @@ app.get( "/", ( _, res ) => {
 } );
 
 io.on( "connection", ( socket ) => {
-  console.log( socket.id, " connected!" );
+  // console.log( socket.id, " connected!" );
   socket.emit( "connection", { msg: "connected" } );
 
   socket.on( "newConnection", ( data ) => {
     console.log( "data: ", data );
     socket.id = data.id;
+  } );
+
+  socket.on( "join_teams", ( teams ) => {
+    socket.join( teams );
+    console.log( `${ socket.id } has joined `, teams );
+  } );
+
+  socket.on( "member_join", ( { teamID, memberID } ) => {
+    console.log( `${ socket.id } (${ memberID }) has joined `, teamID );
+    socket.to( teamID ).emit( "client_member_join", { memberID } );
   } );
 
   socket.on( "disconnect", () => {

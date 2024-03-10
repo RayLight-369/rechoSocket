@@ -20,22 +20,28 @@ app.get( "/", ( _, res ) => {
 } );
 
 io.on( "connection", ( socket ) => {
-  // console.log( socket.id, " connected!" );
   socket.emit( "connection", { msg: "connected" } );
 
   socket.on( "newConnection", ( data ) => {
     console.log( "data: ", data );
-    socket.id = data.id;
   } );
 
   socket.on( "join_teams", ( teams ) => {
-    socket.join( teams );
-    console.log( `${ socket.id } has joined `, teams );
+    const TEAMS = teams.map( team => team.id.toString() );
+
+    socket.join( TEAMS );
+    console.log( `${ socket.id } has joined `, TEAMS );
+
+    io.to( TEAMS ).emit( "client_member_presence", { id: socket.id, TEAMS } );
+
+    // console.log( "rooms: ", io.sockets.adapter.rooms );
   } );
+
 
   socket.on( "member_join", ( { teamID, memberID } ) => {
     console.log( `${ socket.id } (${ memberID }) has joined `, teamID );
-    socket.to( teamID ).emit( "client_member_join", { memberID } );
+    socket.broadcast.to( teamID.toString() ).emit( "client_member_join", { memberID } );
+
   } );
 
   socket.on( "disconnect", () => {
@@ -43,6 +49,13 @@ io.on( "connection", ( socket ) => {
   } );
 } );
 
+// io.on( "m", msg => {
+//   console.log( `hahahahahahhaha: `, msg );
+// } );
+
+// io.on( "test", msg => {
+//   console.log( `io test: `, msg );
+// } );
 
 
 

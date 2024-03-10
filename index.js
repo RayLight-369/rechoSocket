@@ -20,33 +20,45 @@ app.get( "/", ( _, res ) => {
 } );
 
 io.on( "connection", ( socket ) => {
-  socket.emit( "connection", { msg: "connected" } );
+  try {
+    socket.emit( "connection", { msg: "connected" } );
 
-  socket.on( "newConnection", ( data ) => {
-    console.log( "data: ", data );
-  } );
+    socket.on( "newConnection", ( data ) => {
+      console.log( "data: ", data );
+    } );
 
-  socket.on( "join_teams", ( teams ) => {
-    const TEAMS = teams.map( team => team.id.toString() );
+    socket.on( "join_teams", ( teams ) => {
+      const TEAMS = teams.map( team => team.id.toString() );
 
-    socket.join( TEAMS );
-    console.log( `${ socket.id } has joined `, TEAMS );
+      socket.join( TEAMS );
+      console.log( `${ socket.id } has joined `, TEAMS );
 
-    io.to( TEAMS ).emit( "client_member_presence", { id: socket.id, TEAMS } );
+      io.to( TEAMS ).emit( "client_member_presence", { id: socket.id, TEAMS } );
 
-    // console.log( "rooms: ", io.sockets.adapter.rooms );
-  } );
+      // console.log( "rooms: ", io.sockets.adapter.rooms );
+    } );
 
 
-  socket.on( "member_join", ( { teamID, memberID } ) => {
-    console.log( `${ socket.id } (${ memberID }) has joined `, teamID );
-    socket.broadcast.to( teamID.toString() ).emit( "client_member_join", { memberID } );
+    socket.on( "member_join", ( { teamID, memberID } ) => {
+      console.log( `${ socket.id } (${ memberID }) has joined `, teamID );
+      socket.broadcast.to( teamID.toString() ).emit( "client_member_join", { memberID } );
 
-  } );
+    } );
 
-  socket.on( "disconnect", () => {
-    console.log( socket.id, " disconnected!" );
-  } );
+    socket.on( "channel_creation", ( { name: channelName, teamID, channelData } ) => {
+      socket.broadcast.to( teamID.toString() ).emit( "channel_creation", { name: channelName, teamID, channelData } );
+    } );
+
+    socket.on( "task_creation", ( { teamID, channelID, tasksData } ) => {
+      socket.broadcast.to( teamID.toString() ).emit( "task_creation", { channelID, teamID, tasksData } );
+    } );
+
+    socket.on( "disconnect", () => {
+      console.log( socket.id, " disconnected!" );
+    } );
+  } catch ( e ) {
+    console.log( e );
+  }
 } );
 
 // io.on( "m", msg => {

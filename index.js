@@ -66,6 +66,8 @@ io.on( "connection", ( socket ) => {
   }
 } );
 
+io.engine.on( "connection_error", console.log );
+
 // io.on( "m", msg => {
 //   console.log( `hahahahahahhaha: `, msg );
 // } );

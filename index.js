@@ -9,9 +9,10 @@ const io = new SocketIO.Server( server, {
     origin: "https://recho-six.vercel.app",
     methods: [ "GET", "POST" ],
     transports: [ 'websocket', 'polling' ],
-    // credentials: true
+    credentials: true
   },
   allowEIO3: true,
+
 } );
 const PORT = 5261;
 

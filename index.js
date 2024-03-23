@@ -4,16 +4,17 @@ const cors = require( "cors" );
 const app = express();
 const server = https.createServer( app );
 const SocketIO = require( "socket.io" );
-const io = new SocketIO.Server( server, {
-  cors: {
-    origin: "https://recho-six.vercel.app",
-    methods: [ "GET", "POST" ],
-    transports: [ 'websocket', 'polling' ],
-    credentials: true
-  },
-  allowEIO3: true,
+const io = new SocketIO.Server( server );
+// , {
+//   cors: {
+//     origin: "https://recho-six.vercel.app",
+//       methods: [ "GET", "POST" ],
+//         transports: [ 'websocket', 'polling' ],
+//           credentials: true;
+//   },
+//   allowEIO3: true,
 
-} );
+// }
 const PORT = 5261;
 
 
